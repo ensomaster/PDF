@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocConverter Pro - Universal Document Conversion with OCR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .pricing-banner {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .pricing-banner h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+
+        .pricing-tiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .tier {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tier.premium {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tier:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .tier-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .upgrade-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .upgrade-btn:hover {
+            background: #5a67d8;
+        }
+
+        .user-status {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .usage-counter {
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .conversion-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .conversion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .card-header h2 {
+            color: #4a5568;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .card-header .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .file-drop-zone {
+            border: 3px dashed #cbd5e0;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-drop-zone:hover,
+        .file-drop-zone.dragover {
+            border-color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .file-drop-zone.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .file-drop-zone input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .format-selector {
+            margin: 20px 0;
+        }
+
+        .format-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .format-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .format-selector select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .convert-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .convert-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .convert-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .premium-feature {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            color: #2d3436;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .file-info {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .file-info h4 {
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .file-info p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .enhanced-options {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .enhanced-options h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .option-group {
+            margin-bottom: 15px;
+        }
+
+        .option-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .option-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        .option-group input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+            accent-color: #667eea;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0fff4;
+            border-radius: 10px;
+            border-left: 4px solid #38a169;
+            display: none;
+        }
+
+        .download-btn {
+            background: #38a169;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .download-btn:hover {
+            background: #2f855a;
+        }
+
+        .error-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fed7d7;
+            border-radius: 10px;
+            border-left: 4px solid #e53e3e;
+            display: none;
+        }
+
+        .error-section h4 {
+            color: #e53e3e;
+            margin-bottom: 10px;
+        }
+
+        .ocr-preview {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ocr-preview h4 {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .ocr-text {
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .features {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .features h2 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4f8 100%);
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .feature-item .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .conversion-card {
+                padding: 20px;
+            }
+
+            .pricing-tiers {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: -20px;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .plan-features {
+            text-align: left;
+            margin: 15px 0;
+        }
+
+        .plan-features li {
+            margin: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .plan-features li:before {
+            content: "✓";
+            color: #38a169;
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 DocConverter Pro</h1>
+            <p>Convert documents with OCR, Excel processing & premium features</p>
+        </div>
+
+        <!-- User Status Bar -->
+        <div class="user-status">
+            <div class="usage-counter">
+                <span id="dailyUsage">0</span>/5 daily conversions used (Free Plan)
+            </div>
+            <button class="upgrade-btn" onclick="showUpgradeModal()">
+                🚀 Upgrade to Premium
+            </button>
+        </div>
+
+        <!-- Pricing Banner -->
+        <div class="pricing-banner">
+            <h3>🎯 Choose Your Plan</h3>
+            <div class="pricing-tiers">
+                <div class="tier">
+                    <div class="tier-price">Free</div>
+                    <p>5 conversions/day</p>
+                    <p>5MB file limit</p>
+                    <p>Basic features</p>
+                </div>
+                <div class="tier premium">
+                    <div class="tier-price">$9.99/month</div>
+                    <p>Unlimited conversions</p>
+                    <p>100MB file limit</p>
+                    <p>OCR & Advanced features</p>
+                    <p>No watermarks</p>
+                    <p>Priority support</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- OCR Card -->
+            <div class="conversion-card">
+                <div class="card-header">
+                    <span class="icon">📸➡️📄</span>
+                    <h2>OCR Image to Text/PDF</h2>
+                    <p>Extract text from handwritten notes & scanned documents</p>
+                </div>
+
+                <div class="premium-feature" id="ocrPremiumNotice">
+                    🔒 OCR feature available in Premium plan
+                </div>
+
+                <div class="file-drop-zone" id="ocrDropZone">
+                    <input type="file" id="ocrFile" accept=".jpg,.jpeg,.png,.bmp,.tiff">
+                    <p>📷 Drop image files here (JPG, PNG, TIFF)</p>
+                    <p style="font-size: 14px; color: #718096; margin-top: 10px;">
+                        Supports handwriting & printed text recognition
+                    </p>
+                </div>
+
+                <div class="file-info" id="ocrFileInfo">
+                    <h4>Selected Image:</h4>
+                    <p id="ocrFileName"></p>
+                </div>
+
+                <div class="ocr-preview" id="ocrPreview">
+                    <h4>🔍 Recognized Text (editable):</h4>
+                    <textarea id="ocrText" class="ocr-text" rows="8" style="width: 100%; border: 1px solid #e2e8f0; border-radius: 5px; padding: 10px;"></textarea>
+                </div>
+
+                <div class="format-selector">
+                    <label for="ocrOutputFormat">Convert to:</label>
+                    <select id="ocrOutputFormat">
+                        <option value="pdf">📄 PDF Document</option>
+                        <option value="txt">📝 Plain Text</option>
+                        <option value="docx">📄 Word Document</option>
+                    </select>
+                </div>
+
+                <div class="progress-bar" id="ocrProgress">
+                    <div class="progress-fill"></div>
+                </div>
+
+                <button class="convert-btn" id="convertOcrBtn">
+                    🔍 Extract Text with OCR
+                </button>
+
+                <div class="result-section" id="ocrResult">
+                    <p>✅ Text extracted successfully!</p>
+                    <button class="download-btn" id="downloadOcrBtn">📥 Download File</button>
+                </div>
+
+                <div class="error-section" id="ocrError">
+                    <h4>OCR Error</h4>
+                    <p id="ocrErrorMsg"></p>
+                </div>
+            </div>
+
+            <!-- Excel to PDF Card -->
+            <div class="conversion-card">
+                <div class="card-header">
+                    <span class="icon">📊➡️📕</span>
+                    <h2>Excel/Sheets to PDF</h2>
+                    <p>Convert spreadsheets with formatting preserved</p>
+                </div>
+
+                <div class="file-drop-zone" id="excelDropZone">
+                    <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
+                    <p>📊 Drop Excel/CSV files here</p>
+                    <p style="font-size: 14px; color: #718096; margin-top: 10px;">
+                        Supports: XLSX, XLS, CSV
+                    </p>
+                </div>
+
+                <div class="file-info" id="excelFileInfo">
+                    <h4>Selected File:</h4>
+                    <p id="excelFileName"></p>
+                </div>
+
+                <div class="enhanced-options" id="excelOptions">
+                    <h3>📊 Spreadsheet Options</h3>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="preserveFormatting" checked> Preserve Cell Formatting
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="fitToPage" checked> Fit to Page Width
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>Sheet to Convert:</label>
+                        <select id="sheetSelector" style="width: 100%; padding: 8px; margin-top: 5px;">
+                            <option value="0">First Sheet</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="progress-bar" id="excelProgress">
+                    <div class="progress-fill"></div>
+                </div>
+
+                <button class="convert-btn" id="convertExcelBtn">
+                    📊 Convert to PDF
+                </button>
+
+                <div class="result-section" id="excelResult">
+                    <p>✅ Excel converted to PDF successfully!</p>
+                    <button class="download-btn" id="downloadExcelBtn">📥 Download PDF</button>
+                </div>
+
+                <div class="error-section" id="excelError">
+                    <h4>Conversion Error</h4>
+                    <p id="excelErrorMsg"></p>
+                </div>
+            </div>
+
+            <!-- Enhanced PDF to Word Card -->
+            <div class="conversion-card">
+                <div class="card-header">
+                    <span class="icon">📕➡️📄</span>
+                    <h2>PDF to Word/Excel</h2>
+                    <p>Convert PDFs to editable documents with formatting</p>
+                </div>
+
+                <div class="file-drop-zone" id="fromPdfDropZone">
+                    <input type="file" id="fromPdfFile" accept=".pdf">
+                    <p>📁 Drop PDF files here</p>
+                    <p style="font-size: 14px; color: #718096; margin-top: 10px;">
+                        Advanced conversion with formatting preservation
+                    </p>
+                </div>
+
+                <div class="file-info" id="fromPdfFileInfo">
+                    <h4>Selected File:</h4>
+                    <p id="fromPdfFileName"></p>
+                </div>
+
+                <div class="format-selector">
+                    <label for="outputFormat">Convert to:</label>
+                    <select id="outputFormat">
+                        <option value="docx">📄 Word Document (.docx)</option>
+                        <option value="xlsx">📊 Excel Spreadsheet (.xlsx)</option>
+                        <option value="txt">📝 Plain Text (.txt)</option>
+                        <option value="json">🔧 JSON Data (.json)</option>
+                        <option value="csv">📊 CSV Table (.csv)</option>
+                        <option value="html">🌐 HTML Document (.html)</option>
+                    </select>
+                </div>
+
+                <div class="enhanced-options" id="fromPdfOptions" style="display: block;">
+                    <h3>🔧 Conversion Options</h3>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="preservePdfFormatting" checked> Preserve Formatting
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="extractPdfImages"> Extract Images
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="extractMetadata" checked> Include Metadata
+                        </label>
+                    </div>
+                </div>
+
+                <div class="progress-bar" id="fromPdfProgress">
+                    <div class="progress-fill"></div>
+                </div>
+
+                <button class="convert-btn" id="convertFromPdfBtn">
+                    🔄 Convert PDF
+                </button>
+
+                <div class="result-section" id="fromPdfResult">
+                    <p>✅ PDF converted successfully!</p>
+                    <div id="extractedContent" style="max-height: 150px; overflow-y: auto; margin: 10px 0; padding: 10px; background: #f7fafc; border-radius: 5px; font-size: 12px;"></div>
+                    <button class="download-btn" id="downloadConvertedBtn">📥 Download File</button>
+                </div>
+
+                <div class="error-section" id="fromPdfError">
+                    <h4>Conversion Error</h4>
+                    <p id="fromPdfErrorMsg"></p>
+                </div>
+            </div>
+
+            <!-- Text/Documents to PDF Card -->
+            <div class="conversion-card">
+                <div class="card-header">
+                    <span class="icon">📄➡️📕</span>
+                    <h2>Documents to PDF</h2>
+                    <p>Convert text files and documents to PDF</p>
+                </div>
+
+                <div class="file-drop-zone" id="toPdfDropZone">
+                    <input type="file" id="toPdfFile" accept=".txt,.csv,.json,.html,.xml,.rtf">
+                    <p>📁 Drop files here or click to browse</p>
+                    <p style="font-size: 14px; color: #718096; margin-top: 10px;">
+                        Supports: TXT, CSV, JSON, HTML, XML, RTF
+                    </p>
+                </div>
+
+                <div class="file-info" id="toPdfFileInfo">
+                    <h4>Selected File:</h4>
+                    <p id="toPdfFileName"></p>
+                </div>
+
+                <div class="enhanced-options" id="toPdfOptions">
+                    <h3>📊 PDF Options</h3>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="addWatermark"> Add Watermark (Premium)
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="addPageNumbers" checked> Page Numbers
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>Font Size: <span id="fontSizeValue">12</span>px</label>
+                        <input type="range" id="fontSize" min="8" max="24" value="12">
+                    </div>
+                </div>
+
+                <div class="progress-bar" id="toPdfProgress">
+                    <div class="progress-fill"></div>
+                </div>
+
+                <button class="convert-btn" id="convertToPdfBtn">
+                    🔄 Convert to PDF
+                </button>
+
+                <div class="result-section" id="toPdfResult">
+                    <p>✅ PDF created successfully!</p>
+                    <button class="download-btn" id="downloadPdfBtn">📥 Download PDF</button>
+                </div>
+
+                <div class="error-section" id="toPdfError">
+                    <h4>Conversion Error</h4>
+                    <p id="toPdfErrorMsg"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <h2>✨ Premium Features</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <span class="icon">🔍</span>
+                    <h3>Advanced OCR</h3>
+                    <p>Extract text from handwritten notes and scanned documents with 95% accuracy</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">📊</span>
+                    <h3>Excel Processing</h3>
+                    <p>Convert spreadsheets to PDF with preserved formatting, tables, and styling</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">📄</span>
+                    <h3>PDF to Word</h3>
+                    <p>Convert PDFs to editable Word documents maintaining layout and formatting</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">⚡</span>
+                    <h3>Unlimited Usage</h3>
+                    <p>No daily limits, process large files up to 100MB with priority processing</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">🔒</span>
+                    <h3>100% Private</h3>
+                    <p>All processing happens in your browser - your files never leave your device</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">🎨</span>
+                    <h3>Professional Output</h3>
+                    <p>No watermarks, custom styling, batch processing, and enterprise features</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Free version watermark -->
+    <div class="watermark" id="freeWatermark">
+        Free Version - Upgrade for more features
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgradeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>🚀 Upgrade to Premium</h2>
+            <div style="margin: 20px 0;">
+                <div class="tier-price" style="font-size: 2em; color: #667eea;">$9.99/month</div>
+                <p style="color: #718096;">or $59.99/year (save 50%)</p>
+            </div>
+            
+            <ul class="plan-features">
+                <li>Unlimited conversions per day</li>
+                <li>OCR for handwritten notes</li>
+                <li>Excel to PDF with formatting</li>
+                <li>PDF to Word/Excel conversion</li>
+                <li>Files up to 100MB</li>
+                <li>No watermarks</li>
+                <li>Priority customer support</li>
+                <li>Batch processing</li>
+            </ul>
+            
+            <button class="upgrade-btn" style="padding: 15px 30px; font-size: 16px; margin-top: 20px;" onclick="processPremiumUpgrade()">
+                💳 Upgrade Now
+            </button>
+            <p style="font-size: 12px; color: #718096; margin-top: 10px;">
+                Secure payment via Stripe • Cancel anytime • 30-day money back guarantee
+            </p>
+        </div>
+    </div>
+
+    <!-- Required Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.4/docxtemplater.min.js"></script>
+
+    <script>
+        // Configure PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // User management and limits
+        class UserManager {
+            constructor() {
+                this.isPremium = localStorage.getItem('isPremium') === 'true';
+                this.dailyUsage = this.getDailyUsage();
+                this.freeLimit = 5;
+                this.updateUI();
+            }
+
+            getDailyUsage() {
+                const today = new Date().toDateString();
+                const stored = localStorage.getItem('dailyUsage');
+                if (!stored) return { date: today, count: 0 };
+                
+                const usage = JSON.parse(stored);
+                if (usage.date !== today) {
+                    return { date: today, count: 0 };
+                }
+                return usage;
+            }
+
+            canConvert() {
+                if (this.isPremium) return true;
+                return this.dailyUsage.count < this.freeLimit;
+            }
+
+            useConversion() {
+                if (!this.isPremium) {
+                    this.dailyUsage.count++;
+                    localStorage.setItem('dailyUsage', JSON.stringify(this.dailyUsage));
+                }
+                this.updateUI();
+            }
+
+            updateUI() {
+                const usageElement = document.getElementById('dailyUsage');
+                const statusElement = document.querySelector('.user-status .usage-counter');
+                
+                if (this.isPremium) {
+                    statusElement.innerHTML = '🌟 Premium Plan - Unlimited conversions';
+                    document.getElementById('freeWatermark').style.display = 'none';
+                    document.getElementById('ocrPremiumNotice').style.display = 'none';
+                } else {
+                    usageElement.textContent = this.dailyUsage.count;
+                    this.togglePremiumFeatures(false);
+                }
+            }
+
+            togglePremiumFeatures(enabled) {
+                const premiumFeatures = document.querySelectorAll('[id*="Premium"]');
+                const ocrDropZone = document.getElementById('ocrDropZone');
+                const watermarkOption = document.getElementById('addWatermark');
+                
+                if (!enabled) {
+                    ocrDropZone.classList.add('disabled');
+                    if (watermarkOption) watermarkOption.disabled = true;
+                }
+            }
+
+            upgradeToPremium() {
+                this.isPremium = true;
+                localStorage.setItem('isPremium', 'true');
+                this.updateUI();
+                document.getElementById('upgradeModal').style.display = 'none';
+                alert('🎉 Welcome to Premium! All features are now unlocked.');
+            }
+        }
+
+        // Global variables
+        let userManager;
+        let currentFiles = {
+            ocr: null,
+            excel: null,
+            fromPdf: null,
+            toPdf: null
+        };
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            userManager = new UserManager();
+            setupFileDropZones();
+            setupEventListeners();
+            setupModalHandlers();
+        });
+
+        function setupFileDropZones() {
+            setupDropZone('ocrDropZone', 'ocrFile', handleOcrFile);
+            setupDropZone('excelDropZone', 'excelFile', handleExcelFile);
+            setupDropZone('fromPdfDropZone', 'fromPdfFile', handleFromPdfFile);
+            setupDropZone('toPdfDropZone', 'toPdfFile', handleToPdfFile);
+        }
+
+        function setupDropZone(dropZoneId, fileInputId, handler) {
+            const dropZone = document.getElementById(dropZoneId);
+            const fileInput = document.getElementById(fileInputId);
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (!dropZone.classList.contains('disabled')) {
+                    dropZone.classList.add('dragover');
+                }
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (!dropZone.classList.contains('disabled') && e.dataTransfer.files.length > 0) {
+                    handler(e.dataTransfer.files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0 && !dropZone.classList.contains('disabled')) {
+                    handler(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleOcrFile(file) {
+            if (!userManager.isPremium) {
+                showUpgradeModal();
+                return;
+            }
+            currentFiles.ocr = file;
+            const fileInfo = document.getElementById('ocrFileInfo');
+            const fileName = document.getElementById('ocrFileName');
+            
+            fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+            fileInfo.style.display = 'block';
+            hideResults('ocr');
+        }
+
+        function handleExcelFile(file) {
+            if (!userManager.canConvert()) {
+                showUpgradeModal();
+                return;
+            }
+            
+            currentFiles.excel = file;
+            const fileInfo = document.getElementById('excelFileInfo');
+            const fileName = document.getElementById('excelFileName');
+            const options = document.getElementById('excelOptions');
+            
+            fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+            fileInfo.style.display = 'block';
+            options.style.display = 'block';
+            
+            // Load sheet names for Excel files
+            if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                loadExcelSheets(file);
+            }
+            
+            hideResults('excel');
+        }
+
+        function handleFromPdfFile(file) {
+            if (!userManager.canConvert()) {
+                showUpgradeModal();
+                return;
+            }
+            
+            currentFiles.fromPdf = file;
+            const fileInfo = document.getElementById('fromPdfFileInfo');
+            const fileName = document.getElementById('fromPdfFileName');
+            
+            fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+            fileInfo.style.display = 'block';
+            hideResults('fromPdf');
+        }
+
+        function handleToPdfFile(file) {
+            if (!userManager.canConvert()) {
+                showUpgradeModal();
+                return;
+            }
+            
+            currentFiles.toPdf = file;
+            const fileInfo = document.getElementById('toPdfFileInfo');
+            const fileName = document.getElementById('toPdfFileName');
+            const options = document.getElementById('toPdfOptions');
+            
+            fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+            fileInfo.style.display = 'block';
+            options.style.display = 'block';
+            hideResults('toPdf');
+        }
+
+        function setupEventListeners() {
+            // Font size slider
+            const fontSizeSlider = document.getElementById('fontSize');
+            const fontSizeValue = document.getElementById('fontSizeValue');
+            fontSizeSlider.addEventListener('input', (e) => {
+                fontSizeValue.textContent = e.target.value;
+            });
+
+            // Convert buttons
+            document.getElementById('convertOcrBtn').addEventListener('click', convertOcrFile);
+            document.getElementById('convertExcelBtn').addEventListener('click', convertExcelFile);
+            document.getElementById('convertFromPdfBtn').addEventListener('click', convertFromPdf);
+            document.getElementById('convertToPdfBtn').addEventListener('click', convertToPdf);
+        }
+
+        function setupModalHandlers() {
+            const modal = document.getElementById('upgradeModal');
+            const closeBtn = document.querySelector('.close');
+            
+            closeBtn.onclick = () => modal.style.display = 'none';
+            window.onclick = (e) => {
+                if (e.target === modal) modal.style.display = 'none';
+            };
+        }
+
+        // OCR Conversion Function
+        async function convertOcrFile() {
+            if (!currentFiles.ocr) {
+                showError('ocrError', 'Please select an image file first');
+                return;
+            }
+
+            if (!userManager.isPremium) {
+                showUpgradeModal();
+                return;
+            }
+
+            const btn = document.getElementById('convertOcrBtn');
+            const progressBar = document.getElementById('ocrProgress');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Processing OCR...';
+            progressBar.style.display = 'block';
+            hideResults('ocr');
+
+            try {
+                // Show progress for OCR processing
+                updateProgress('ocrProgress', 20);
+                
+                // Perform OCR with Tesseract.js
+                const result = await Tesseract.recognize(currentFiles.ocr, 'eng', {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const progress = Math.floor(m.progress * 60) + 20;
+                            updateProgress('ocrProgress', progress);
+                        }
+                    }
+                });
+
+                const extractedText = result.data.text;
+                
+                // Show OCR preview
+                const ocrPreview = document.getElementById('ocrPreview');
+                const ocrTextArea = document.getElementById('ocrText');
+                ocrTextArea.value = extractedText;
+                ocrPreview.style.display = 'block';
+                
+                updateProgress('ocrProgress', 100);
+                
+                btn.innerHTML = '📄 Convert to Selected Format';
+                btn.onclick = () => convertOcrToFormat(extractedText);
+                
+            } catch (error) {
+                console.error('OCR error:', error);
+                showError('ocrError', `OCR processing failed: ${error.message}`);
+                btn.innerHTML = '🔍 Extract Text with OCR';
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => {
+                    document.getElementById('ocrProgress').style.display = 'none';
+                }, 1000);
+            }
+        }
+
+        async function convertOcrToFormat(text) {
+            const outputFormat = document.getElementById('ocrOutputFormat').value;
+            const editedText = document.getElementById('ocrText').value;
+            
+            try {
+                let outputBlob;
+                let fileName = currentFiles.ocr.name.replace(/\.[^/.]+$/, "") + '_ocr';
+                
+                switch (outputFormat) {
+                    case 'pdf':
+                        outputBlob = await createPdfFromText(editedText);
+                        fileName += '.pdf';
+                        break;
+                    case 'txt':
+                        outputBlob = new Blob([editedText], { type: 'text/plain' });
+                        fileName += '.txt';
+                        break;
+                    case 'docx':
+                        outputBlob = await createDocxFromText(editedText);
+                        fileName += '.docx';
+                        break;
+                }
+                
+                setupDownload('downloadOcrBtn', outputBlob, fileName);
+                showResult('ocrResult');
+                userManager.useConversion();
+                
+            } catch (error) {
+                console.error('Format conversion error:', error);
+                showError('ocrError', `Failed to create ${outputFormat.toUpperCase()}: ${error.message}`);
+            }
+        }
+
+        // Excel Conversion Function
+        async function convertExcelFile() {
+            if (!currentFiles.excel) {
+                showError('excelError', 'Please select an Excel file first');
+                return;
+            }
+
+            const btn = document.getElementById('convertExcelBtn');
+            const progressBar = document.getElementById('excelProgress');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Converting Excel...';
+            progressBar.style.display = 'block';
+            hideResults('excel');
+
+            try {
+                const arrayBuffer = await readFileAsArrayBuffer(currentFiles.excel);
+                updateProgress('excelProgress', 30);
+                
+                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                const sheetSelector = document.getElementById('sheetSelector');
+                const selectedSheetIndex = parseInt(sheetSelector.value);
+                const sheetName = workbook.SheetNames[selectedSheetIndex];
+                const worksheet = workbook.Sheets[sheetName];
+                
+                updateProgress('excelProgress', 60);
+                
+                // Convert to PDF with table formatting
+                const pdfBlob = await createPdfFromExcel(worksheet, sheetName);
+                updateProgress('excelProgress', 100);
+                
+                const fileName = currentFiles.excel.name.replace(/\.[^/.]+$/, "") + '.pdf';
+                setupDownload('downloadExcelBtn', pdfBlob, fileName);
+                showResult('excelResult');
+                userManager.useConversion();
+                
+                btn.innerHTML = '✅ Conversion Complete';
+                
+            } catch (error) {
+                console.error('Excel conversion error:', error);
+                showError('excelError', `Failed to convert Excel: ${error.message}`);
+                btn.innerHTML = '📊 Convert to PDF';
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => {
+                    if (btn.innerHTML.includes('Complete')) {
+                        btn.innerHTML = '📊 Convert to PDF';
+                    }
+                    document.getElementById('excelProgress').style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // Enhanced PDF to Word/Excel Conversion
+        async function convertFromPdf() {
+            if (!currentFiles.fromPdf) {
+                showError('fromPdfError', 'Please select a PDF file first');
+                return;
+            }
+
+            const btn = document.getElementById('convertFromPdfBtn');
+            const progressBar = document.getElementById('fromPdfProgress');
+            const outputFormat = document.getElementById('outputFormat').value;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Converting PDF...';
+            progressBar.style.display = 'block';
+            hideResults('fromPdf');
+
+            try {
+                const arrayBuffer = await readFileAsArrayBuffer(currentFiles.fromPdf);
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                
+                updateProgress('fromPdfProgress', 20);
+                
+                let extractedData = {
+                    fullText: '',
+                    pages: [],
+                    metadata: {},
+                    tables: []
+                };
+
+                // Extract text and identify tables
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const textContent = await page.getTextContent();
+                    
+                    let pageText = '';
+                    let tableData = [];
+                    
+                    textContent.items.forEach(item => {
+                        pageText += item.str + ' ';
+                        
+                        // Simple table detection (items with similar y-coordinates)
+                        if (item.str.trim() && !isNaN(parseFloat(item.str))) {
+                            tableData.push({
+                                text: item.str,
+                                x: item.transform[4],
+                                y: item.transform[5]
+                            });
+                        }
+                    });
+                    
+                    extractedData.pages.push({
+                        page: pageNum,
+                        text: pageText.trim()
+                    });
+                    
+                    if (tableData.length > 0) {
+                        extractedData.tables.push(...tableData);
+                    }
+                    
+                    const progress = Math.floor((pageNum / pdf.numPages) * 60) + 20;
+                    updateProgress('fromPdfProgress', progress);
+                }
+
+                extractedData.fullText = extractedData.pages.map(p => p.text).join('\n\n');
+                
+                // Get metadata
+                try {
+                    const metadata = await pdf.getMetadata();
+                    extractedData.metadata = {
+                        title: metadata.info?.Title || '',
+                        author: metadata.info?.Author || '',
+                        subject: metadata.info?.Subject || '',
+                        pages: pdf.numPages
+                    };
+                } catch (e) {
+                    console.warn('Could not extract metadata');
+                }
+
+                updateProgress('fromPdfProgress', 90);
+                
+                // Generate output based on format
+                let outputBlob;
+                let fileName = currentFiles.fromPdf.name.replace(/\.[^/.]+$/, "") + '_converted';
+                
+                switch (outputFormat) {
+                    case 'docx':
+                        outputBlob = await createDocxFromPdf(extractedData);
+                        fileName += '.docx';
+                        break;
+                    case 'xlsx':
+                        outputBlob = await createExcelFromPdf(extractedData);
+                        fileName += '.xlsx';
+                        break;
+                    case 'txt':
+                        outputBlob = new Blob([extractedData.fullText], { type: 'text/plain' });
+                        fileName += '.txt';
+                        break;
+                    case 'json':
+                        outputBlob = new Blob([JSON.stringify(extractedData, null, 2)], { type: 'application/json' });
+                        fileName += '.json';
+                        break;
+                    case 'csv':
+                        const csvContent = createCsvFromPdf(extractedData);
+                        outputBlob = new Blob([csvContent], { type: 'text/csv' });
+                        fileName += '.csv';
+                        break;
+                    case 'html':
+                        const htmlContent = createHtmlFromPdf(extractedData);
+                        outputBlob = new Blob([htmlContent], { type: 'text/html' });
+                        fileName += '.html';
+                        break;
+                }
+                
+                updateProgress('fromPdfProgress', 100);
+                
+                // Show preview
+                displayPdfContent(extractedData);
+                
+                setupDownload('downloadConvertedBtn', outputBlob, fileName);
+                showResult('fromPdfResult');
+                userManager.useConversion();
+                
+                btn.innerHTML = '✅ Conversion Complete';
+                
+            } catch (error) {
+                console.error('PDF conversion error:', error);
+                showError('fromPdfError', `PDF conversion failed: ${error.message}`);
+                btn.innerHTML = '🔄 Convert PDF';
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => {
+                    if (btn.innerHTML.includes('Complete')) {
+                        btn.innerHTML = '🔄 Convert PDF';
+                    }
+                    document.getElementById('fromPdfProgress').style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // Enhanced Text to PDF Conversion
+        async function convertToPdf() {
+            if (!currentFiles.toPdf) {
+                showError('toPdfError', 'Please select a file first');
+                return;
+            }
+
+            const btn = document.getElementById('convertToPdfBtn');
+            const progressBar = document.getElementById('toPdfProgress');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Converting...';
+            progressBar.style.display = 'block';
+            hideResults('toPdf');
+
+            try {
+                const fileContent = await readFileAsText(currentFiles.toPdf);
+                updateProgress('toPdfProgress', 40);
+                
+                const pdfBlob = await createPdfFromText(fileContent);
+                updateProgress('toPdfProgress', 100);
+                
+                const fileName = currentFiles.toPdf.name.replace(/\.[^/.]+$/, "") + '.pdf';
+                setupDownload('downloadPdfBtn', pdfBlob, fileName);
+                showResult('toPdfResult');
+                userManager.useConversion();
+                
+                btn.innerHTML = '✅ Conversion Complete';
+                
+            } catch (error) {
+                console.error('PDF creation error:', error);
+                showError('toPdfError', `Failed to create PDF: ${error.message}`);
+                btn.innerHTML = '🔄 Convert to PDF';
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => {
+                    if (btn.innerHTML.includes('Complete')) {
+                        btn.innerHTML = '🔄 Convert to PDF';
+                    }
+                    document.getElementById('toPdfProgress').style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // Helper Functions
+        async function createPdfFromText(text) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const fontSize = parseInt(document.getElementById('fontSize').value);
+            const addWatermark = document.getElementById('addWatermark').checked && userManager.isPremium;
+            const addPageNumbers = document.getElementById('addPageNumbers').checked;
+            
+            doc.setFontSize(fontSize);
+            
+            const pageWidth = doc.internal.pageSize.width - 20;
+            const lines = doc.splitTextToSize(text, pageWidth);
+            
+            let yPosition = 20;
+            const lineHeight = fontSize * 0.5;
+            let pageNumber = 1;
+            
+            lines.forEach((line) => {
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 20;
+                    pageNumber++;
+                }
+                doc.text(line, 10, yPosition);
+                yPosition += lineHeight;
+            });
+            
+            // Add watermark for premium users
+            if (addWatermark) {
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setTextColor(200, 200, 200);
+                    doc.setFontSize(50);
+                    doc.text('CONFIDENTIAL', 105, 150, { angle: 45, align: 'center' });
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(fontSize);
+                }
+            }
+            
+            // Add page numbers
+            if (addPageNumbers) {
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(10);
+                    doc.text(`Page ${i} of ${totalPages}`, 105, 290, { align: 'center' });
+                    doc.setFontSize(fontSize);
+                }
+            }
+            
+            // Add free watermark for non-premium users
+            if (!userManager.isPremium) {
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setTextColor(230, 230, 230);
+                    doc.setFontSize(12);
+                    doc.text('Created with DocConverter Pro - Free Version', 105, 285, { align: 'center' });
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(fontSize);
+                }
+            }
+            
+            return doc.output('blob');
+        }
+
+        async function createPdfFromExcel(worksheet, sheetName) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape'); // Landscape for better table fit
+            
+            const range = XLSX.utils.decode_range(worksheet['!ref']);
+            const data = [];
+            
+            // Extract data from worksheet
+            for (let row = range.s.r; row <= range.e.r; row++) {
+                const rowData = [];
+                for (let col = range.s.c; col <= range.e.c; col++) {
+                    const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+                    const cell = worksheet[cellAddress];
+                    rowData.push(cell ? cell.v : '');
+                }
+                data.push(rowData);
+            }
+            
+            // Add title
+            doc.setFontSize(16);
+            doc.text(`Excel Sheet: ${sheetName}`, 20, 20);
+            
+            // Create table
+            let yPos = 40;
+            const cellWidth = 25;
+            const cellHeight = 8;
+            
+            doc.setFontSize(10);
+            
+            data.forEach((row, rowIndex) => {
+                if (yPos > 180) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                row.forEach((cell, colIndex) => {
+                    const xPos = 20 + (colIndex * cellWidth);
+                    
+                    // Draw cell border
+                    doc.rect(xPos, yPos, cellWidth, cellHeight);
+                    
+                    // Add cell content
+                    const cellText = String(cell).substring(0, 15); // Truncate long text
+                    doc.text(cellText, xPos + 2, yPos + 5);
+                });
+                
+                yPos += cellHeight;
+            });
+            
+            return doc.output('blob');
+        }
+
+        async function createDocxFromText(text) {
+            // Simple DOCX creation - in a real implementation, you'd use a proper library
+            const docxContent = `
+                <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+                    <w:body>
+                        <w:p>
+                            <w:r>
+                                <w:t>${text.replace(/\n/g, '</w:t></w:r></w:p><w:p><w:r><w:t>')}</w:t>
+                            </w:r>
+                        </w:p>
+                    </w:body>
+                </w:document>
+            `;
+            
+            // This is a simplified version - real DOCX files need proper ZIP structure
+            return new Blob([docxContent], { 
+                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+            });
+        }
+
+        async function createDocxFromPdf(data) {
+            // Enhanced DOCX creation with basic formatting preservation
+            let docxContent = `
+                <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+                    <w:body>
+            `;
+            
+            // Add metadata if available
+            if (data.metadata.title) {
+                docxContent += `
+                    <w:p>
+                        <w:pPr>
+                            <w:pStyle w:val="Title"/>
+                        </w:pPr>
+                        <w:r>
+                            <w:rPr>
+                                <w:b/>
+                                <w:sz w:val="28"/>
+                            </w:rPr>
+                            <w:t>${data.metadata.title}</w:t>
+                        </w:r>
+                    </w:p>
+                `;
+            }
+            
+            // Add content from each page
+            data.pages.forEach((page, index) => {
+                if (index > 0) {
+                    docxContent += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+                }
+                
+                const paragraphs = page.text.split('\n').filter(p => p.trim());
+                paragraphs.forEach(paragraph => {
+                    docxContent += `
+                        <w:p>
+                            <w:r>
+                                <w:t>${paragraph}</w:t>
+                            </w:r>
+                        </w:p>
+                    `;
+                });
+            });
+            
+            docxContent += `
+                    </w:body>
+                </w:document>
+            `;
+            
+            return new Blob([docxContent], { 
+                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+            });
+        }
+
+        async function createExcelFromPdf(data) {
+            const wb = XLSX.utils.book_new();
+            
+            // Create a worksheet with extracted text
+            const wsData = [];
+            
+            // Add metadata
+            if (data.metadata.title) {
+                wsData.push(['Title', data.metadata.title]);
+                wsData.push(['Author', data.metadata.author || '']);
+                wsData.push(['Pages', data.metadata.pages || '']);
+                wsData.push(['']); // Empty row
+            }
+            
+            // Add page content
+            data.pages.forEach((page) => {
+                wsData.push([`Page ${page.page}`, page.text.substring(0, 32767)]); // Excel cell limit
+            });
+            
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'ExtractedContent');
+            
+            // If tables were detected, create a separate sheet
+            if (data.tables && data.tables.length > 0) {
+                const tableData = data.tables.map(table => [table.text, table.x, table.y]);
+                const tableWs = XLSX.utils.aoa_to_sheet([
+                    ['Text', 'X Position', 'Y Position'],
+                    ...tableData
+                ]);
+                XLSX.utils.book_append_sheet(wb, tableWs, 'Tables');
+            }
+            
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            return new Blob([excelBuffer], { 
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+            });
+        }
+
+        function createCsvFromPdf(data) {
+            let csvContent = 'Page,Content\n';
+            data.pages.forEach(page => {
+                const escapedText = '"' + page.text.replace(/"/g, '""').substring(0, 32767) + '"';
+                csvContent += `${page.page},${escapedText}\n`;
+            });
+            return csvContent;
+        }
+
+        function createHtmlFromPdf(data) {
+            let htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${data.metadata.title || 'Extracted PDF Content'}</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        .metadata { background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .page { margin-bottom: 30px; padding: 15px; border-left: 3px solid #007cba; }
+        .page-header { font-weight: bold; color: #007cba; margin-bottom: 10px; font-size: 1.2em; }
+        .page-content { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <h1>📄 ${data.metadata.title || 'Extracted PDF Content'}</h1>`;
+            
+            // Add metadata
+            if (data.metadata && Object.keys(data.metadata).length > 0) {
+                htmlContent += `
+    <div class="metadata">
+        <h2>📋 Document Information</h2>
+        ${data.metadata.title ? `<p><strong>Title:</strong> ${data.metadata.title}</p>` : ''}
+        ${data.metadata.author ? `<p><strong>Author:</strong> ${data.metadata.author}</p>` : ''}
+        ${data.metadata.subject ? `<p><strong>Subject:</strong> ${data.metadata.subject}</p>` : ''}
+        <p><strong>Pages:</strong> ${data.metadata.pages || data.pages.length}</p>
+    </div>`;
+            }
+            
+            // Add page content
+            data.pages.forEach(page => {
+                htmlContent += `
+    <div class="page">
+        <div class="page-header">📄 Page ${page.page}</div>
+        <div class="page-content">${page.text.replace(/\n/g, '<br>')}</div>
+    </div>`;
+            });
+            
+            htmlContent += `
+</body>
+</html>`;
+            return htmlContent;
+        }
+
+        async function loadExcelSheets(file) {
+            try {
+                const arrayBuffer = await readFileAsArrayBuffer(file);
+                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                const sheetSelector = document.getElementById('sheetSelector');
+                
+                sheetSelector.innerHTML = '';
+                workbook.SheetNames.forEach((name, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = name;
+                    sheetSelector.appendChild(option);
+                });
+            } catch (error) {
+                console.warn('Could not load Excel sheets:', error);
+            }
+        }
+
+        function displayPdfContent(data) {
+            const contentDiv = document.getElementById('extractedContent');
+            contentDiv.innerHTML = '';
+            
+            // Show metadata
+            if (data.metadata && Object.keys(data.metadata).length > 0) {
+                const metaDiv = document.createElement('div');
+                metaDiv.innerHTML = `
+                    <strong>📋 Document Info:</strong><br>
+                    ${data.metadata.title ? `Title: ${data.metadata.title}<br>` : ''}
+                    ${data.metadata.author ? `Author: ${data.metadata.author}<br>` : ''}
+                    Pages: ${data.metadata.pages || data.pages.length}<br><br>
+                `;
+                contentDiv.appendChild(metaDiv);
+            }
+            
+            // Show first few pages preview
+            const previewPages = data.pages.slice(0, 2);
+            previewPages.forEach(page => {
+                const pageDiv = document.createElement('div');
+                pageDiv.innerHTML = `
+                    <strong>📄 Page ${page.page}:</strong><br>
+                    ${page.text.substring(0, 200)}${page.text.length > 200 ? '...' : ''}
+                    <br><br>
+                `;
+                contentDiv.appendChild(pageDiv);
+            });
+            
+            if (data.pages.length > 2) {
+                const moreDiv = document.createElement('div');
+                moreDiv.innerHTML = `<em>... and ${data.pages.length - 2} more pages</em>`;
+                contentDiv.appendChild(moreDiv);
+            }
+        }
+
+        // Utility Functions
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function setupDownload(buttonId, blob, filename) {
+            const downloadBtn = document.getElementById(buttonId);
+            const url = URL.createObjectURL(blob);
+            
+            downloadBtn.onclick = () => {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+        }
+
+        function updateProgress(progressId, percentage) {
+            const progressFill = document.querySelector(`#${progressId} .progress-fill`);
+            if (progressFill) {
+                progressFill.style.width = Math.min(percentage, 100) + '%';
+            }
+        }
+
+        function showResult(resultId) {
+            document.getElementById(resultId).style.display = 'block';
+        }
+
+        function hideResults(type) {
+            const resultElement = document.getElementById(type + 'Result');
+            const errorElement = document.getElementById(type + 'Error');
+            if (resultElement) resultElement.style.display = 'none';
+            if (errorElement) errorElement.style.display = 'none';
+        }
+
+        function showError(errorId, message) {
+            const errorSection = document.getElementById(errorId);
+            const errorMsg = document.getElementById(errorId.replace('Error', 'ErrorMsg'));
+            if (errorMsg) errorMsg.textContent = message;
+            if (errorSection) errorSection.style.display = 'block';
+        }
+
+        function showUpgradeModal() {
+            document.getElementById('upgradeModal').style.display = 'block';
+        }
+
+        function processPremiumUpgrade() {
+            // In a real implementation, this would integrate with Stripe or similar
+            // For demo purposes, we'll simulate the upgrade
+            if (confirm('🚀 This would normally redirect to Stripe payment page. Simulate upgrade for demo?')) {
+                userManager.upgradeToPremium();
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Enhanced error handling
+        window.addEventListener('error', function(e) {
+            console.error('Application error:', e.error);
+            // Could send error reports to analytics in production
+        });
+
+        // Performance monitoring
+        window.addEventListener('load', function() {
+            const loadTime = performance.now();
+            console.log(`Application loaded in ${Math.round(loadTime)}ms`);
+        });
+
+        // Service worker for offline support (optional enhancement)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // Uncomment to enable offline support
+                // navigator.serviceWorker.register('/sw.js')
+                //     .then(reg => console.log('SW registered'))
+                //     .catch(err => console.log('SW registration failed'));
+            });
+        }
+
+        // Keyboard shortcuts for power users
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+U for upgrade modal
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                showUpgradeModal();
+            }
+        });
+
+        // Auto-save user preferences
+        function saveUserPreferences() {
+            const preferences = {
+                fontSize: document.getElementById('fontSize')?.value,
+                preserveFormatting: document.getElementById('preservePdfFormatting')?.checked,
+                // Add other preferences as needed
+            };
+            localStorage.setItem('userPreferences', JSON.stringify(preferences));
+        }
+
+        function loadUserPreferences() {
+            const saved = localStorage.getItem('userPreferences');
+            if (saved) {
+                const preferences = JSON.parse(saved);
+                if (preferences.fontSize) {
+                    const fontSlider = document.getElementById('fontSize');
+                    const fontValue = document.getElementById('fontSizeValue');
+                    if (fontSlider && fontValue) {
+                        fontSlider.value = preferences.fontSize;
+                        fontValue.textContent = preferences.fontSize;
+                    }
+                }
+                // Load other preferences
+            }
+        }
+
+        // Load preferences on startup
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserPreferences();
+            
+            // Save preferences when changed
+            document.addEventListener('change', function(e) {
+                if (e.target.type === 'range' || e.target.type === 'checkbox') {
+                    saveUserPreferences();
+                }
+            });
+        });
+
+        // Analytics placeholder (replace with your analytics service)
+        function trackEvent(action, category = 'conversion') {
+            console.log(`Analytics: ${category} - ${action}`);
+            // Example: gtag('event', action, { event_category: category });
+        }
+
+        // Track conversions for business metrics
+        const originalUseConversion = userManager?.useConversion;
+        if (userManager) {
+            userManager.useConversion = function() {
+                originalUseConversion?.call(this);
+                trackEvent('file_converted');
+            };
+        }
+    </script>
+</body>
+</html>
