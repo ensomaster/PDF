@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocConverter Pro - Universal Document Conversion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .conversion-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .conversion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .card-header h2 {
+            color: #4a5568;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .card-header .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .file-drop-zone {
+            border: 3px dashed #cbd5e0;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-drop-zone:hover,
+        .file-drop-zone.dragover {
+            border-color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .file-drop-zone input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .format-selector {
+            margin: 20px 0;
+        }
+
+        .format-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .format-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .format-selector select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .convert-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .convert-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .convert-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .file-info {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .file-info h4 {
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .file-info p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .enhanced-options {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .enhanced-options h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .option-group {
+            margin-bottom: 15px;
+        }
+
+        .option-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .option-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        .option-group input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+            accent-color: #667eea;
+        }
+
+        .features {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .features h2 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4f8 100%);
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .feature-item .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0fff4;
+            border-radius: 10px;
+            border-left: 4px solid #38a169;
+            display: none;
+        }
+
+        .download-btn {
+            background: #38a169;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .download-btn:hover {
+            background: #2f855a;
+        }
+
+        .error-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fed7d7;
+            border-radius: 10px;
+            border-left: 4px solid #e53e3e;
+            display: none;
+        }
+
+        .error-section h4 {
+            color: #e53e3e;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .conversion-card {
+                padding: 20px;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .pdf-pages {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .pdf-page {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 DocConverter Pro</h1>
+            <p>Convert documents seamlessly with real PDF processing</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Convert to PDF -->
+            <div class="conversion-card">
+                <div class="card-header">
+                    <span class="icon">📄➡️📕</span>
+                    <h2>Convert to PDF</h2>
+                    <p>Transform text and documents into PDF</p>
+                </div>
+
+                <div class="file-drop-zone" id="toPdfDropZone">
+                    <input type="file" id="toPdfFile" accept=".txt,.csv,.json,.html,.xml">
+                    <p>📁 Drop your file here or click to browse</p>
+                    <p style="font-size: 14px; color: #718096; margin-top: 10px;">
+                        Supports: TXT, CSV, JSON, HTML, XML
+                    </p>
+                </div>
+
+                <div class="file-info" id="toPdfFileInfo">
+                    <h4>Selected File:</h4>
+                    <p id="toPdfFileName"></p>
+                </div>
+
+                <div class="enhanced-options" id="toPdfOptions">
+                    <h3>📊 PDF Options</h3>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="addWatermark"> Add Watermark
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="addPageNumbers"> Page Numbers
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>Font Size: <span id="fontSizeValue">12</span>px</label>
+                        <input type="range" id="fontSize" min="8" max="24" value="12">
+                    </div>
+                </div>
+
+                <div class="progress-bar" id="toPdfProgress">
+                    <div class="progress-fill"></div>
+                </div>
+
+                <button class="convert-btn" id="convertToPdfBtn">
+                    🔄 Convert to PDF
+                </button>
+
+                <div class="result-section" id="toPdfResult">
+                    <p>✅ PDF created successfully!</p>
+                    <button class="download-btn" id="downloadPdfBtn">📥 Download PDF</button>
+                </div>
+
+                <div class="error-section" id="toPdfError">
+                    <h4>Conversion Error</h4>
+                    <p id="toPdfErrorMsg"></p>
+                </div>
+            </div>
+
+            <!-- Convert from PDF -->
+            <div class="conversion-card">
+                <div class="card-header">
+                    <span class="icon">📕➡️📄</span>
+                    <h2>Convert from PDF</h2>
+                    <p>Extract text and data from PDF files</p>
+                </div>
+
+                <div class="file-drop-zone" id="fromPdfDropZone">
+                    <input type="file" id="fromPdfFile" accept=".pdf">
+                    <p>📁 Drop your PDF here or click to browse</p>
+                    <p style="font-size: 14px; color: #718096; margin-top: 10px;">
+                        Accepts PDF files only
+                    </p>
+                </div>
+
+                <div class="file-info" id="fromPdfFileInfo">
+                    <h4>Selected File:</h4>
+                    <p id="fromPdfFileName"></p>
+                </div>
+
+                <div class="format-selector">
+                    <label for="outputFormat">Output Format:</label>
+                    <select id="outputFormat">
+                        <option value="txt">📝 Plain Text (.txt)</option>
+                        <option value="json">🔧 JSON Data (.json)</option>
+                        <option value="csv">📊 CSV Table (.csv)</option>
+                        <option value="html">🌐 HTML Document (.html)</option>
+                    </select>
+                </div>
+
+                <div class="enhanced-options" id="fromPdfOptions" style="display: block;">
+                    <h3>🔧 Extraction Options</h3>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="preserveFormatting" checked> Preserve Line Breaks
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="extractMetadata" checked> Include Metadata
+                        </label>
+                    </div>
+                </div>
+
+                <div class="progress-bar" id="fromPdfProgress">
+                    <div class="progress-fill"></div>
+                </div>
+
+                <button class="convert-btn" id="convertFromPdfBtn">
+                    🔄 Extract from PDF
+                </button>
+
+                <div class="result-section" id="fromPdfResult">
+                    <p>✅ Text extracted successfully!</p>
+                    <div id="extractedContent" class="pdf-pages"></div>
+                    <button class="download-btn" id="downloadConvertedBtn">📥 Download File</button>
+                </div>
+
+                <div class="error-section" id="fromPdfError">
+                    <h4>Extraction Error</h4>
+                    <p id="fromPdfErrorMsg"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <h2>✨ Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <span class="icon">⚡</span>
+                    <h3>Client-Side Processing</h3>
+                    <p>All conversions happen in your browser - no server uploads needed</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">🔒</span>
+                    <h3>100% Private</h3>
+                    <p>Your files never leave your device - complete privacy guaranteed</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">🎨</span>
+                    <h3>Real PDF Processing</h3>
+                    <p>Uses PDF.js library for authentic PDF reading and jsPDF for creation</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">📱</span>
+                    <h3>Works Everywhere</h3>
+                    <p>Compatible with all modern browsers on desktop, tablet, and mobile</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <script>
+        // Configure PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // Global variables
+        let toPdfFile = null;
+        let fromPdfFile = null;
+        let extractedPdfContent = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupFileDropZones();
+            setupEventListeners();
+        });
+
+        function setupFileDropZones() {
+            setupDropZone('toPdfDropZone', 'toPdfFile', handleToPdfFile);
+            setupDropZone('fromPdfDropZone', 'fromPdfFile', handleFromPdfFile);
+        }
+
+        function setupDropZone(dropZoneId, fileInputId, handler) {
+            const dropZone = document.getElementById(dropZoneId);
+            const fileInput = document.getElementById(fileInputId);
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handler(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handler(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleToPdfFile(file) {
+            toPdfFile = file;
+            const fileInfo = document.getElementById('toPdfFileInfo');
+            const fileName = document.getElementById('toPdfFileName');
+            const options = document.getElementById('toPdfOptions');
+
+            fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+            fileInfo.style.display = 'block';
+            options.style.display = 'block';
+
+            // Hide previous results/errors
+            document.getElementById('toPdfResult').style.display = 'none';
+            document.getElementById('toPdfError').style.display = 'none';
+        }
+
+        function handleFromPdfFile(file) {
+            fromPdfFile = file;
+            const fileInfo = document.getElementById('fromPdfFileInfo');
+            const fileName = document.getElementById('fromPdfFileName');
+
+            fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+            fileInfo.style.display = 'block';
+
+            // Hide previous results/errors
+            document.getElementById('fromPdfResult').style.display = 'none';
+            document.getElementById('fromPdfError').style.display = 'none';
+        }
+
+        function setupEventListeners() {
+            // Font size slider
+            const fontSizeSlider = document.getElementById('fontSize');
+            const fontSizeValue = document.getElementById('fontSizeValue');
+            
+            fontSizeSlider.addEventListener('input', (e) => {
+                fontSizeValue.textContent = e.target.value;
+            });
+
+            // Convert buttons
+            document.getElementById('convertToPdfBtn').addEventListener('click', convertToPdf);
+            document.getElementById('convertFromPdfBtn').addEventListener('click', convertFromPdf);
+        }
+
+        async function convertToPdf() {
+            if (!toPdfFile) {
+                showError('toPdfError', 'Please select a file first');
+                return;
+            }
+
+            const btn = document.getElementById('convertToPdfBtn');
+            const progressBar = document.getElementById('toPdfProgress');
+            
+            // Show loading state
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Converting...';
+            progressBar.style.display = 'block';
+            hideResults('toPdf');
+
+            try {
+                // Read file content
+                const fileContent = await readFileAsText(toPdfFile);
+                
+                // Create PDF with jsPDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Get options
+                const fontSize = parseInt(document.getElementById('fontSize').value);
+                const addWatermark = document.getElementById('addWatermark').checked;
+                const addPageNumbers = document.getElementById('addPageNumbers').checked;
+                
+                doc.setFontSize(fontSize);
+                
+                // Process content based on file type
+                let processedContent = fileContent;
+                
+                if (toPdfFile.name.endsWith('.json')) {
+                    try {
+                        const jsonData = JSON.parse(fileContent);
+                        processedContent = JSON.stringify(jsonData, null, 2);
+                    } catch (e) {
+                        processedContent = fileContent;
+                    }
+                } else if (toPdfFile.name.endsWith('.csv')) {
+                    processedContent = formatCsvForPdf(fileContent);
+                } else if (toPdfFile.name.endsWith('.html')) {
+                    processedContent = stripHtmlTags(fileContent);
+                }
+
+                // Split text into lines that fit the page
+                const pageWidth = doc.internal.pageSize.width - 20;
+                const lines = doc.splitTextToSize(processedContent, pageWidth);
+                
+                let yPosition = 20;
+                const lineHeight = fontSize * 0.5;
+                let pageNumber = 1;
+                
+                // Add content to PDF
+                lines.forEach((line, index) => {
+                    if (yPosition > 270) {
+                        doc.addPage();
+                        yPosition = 20;
+                        pageNumber++;
+                    }
+                    
+                    doc.text(line, 10, yPosition);
+                    yPosition += lineHeight;
+                });
+                
+                // Add watermark if selected
+                if (addWatermark) {
+                    const totalPages = doc.internal.getNumberOfPages();
+                    for (let i = 1; i <= totalPages; i++) {
+                        doc.setPage(i);
+                        doc.setTextColor(200, 200, 200);
+                        doc.setFontSize(50);
+                        doc.text('CONFIDENTIAL', 105, 150, {
+                            angle: 45,
+                            align: 'center'
+                        });
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFontSize(fontSize);
+                    }
+                }
+                
+                // Add page numbers if selected
+                if (addPageNumbers) {
+                    const totalPages = doc.internal.getNumberOfPages();
+                    for (let i = 1; i <= totalPages; i++) {
+                        doc.setPage(i);
+                        doc.setFontSize(10);
+                        doc.text(`Page ${i} of ${totalPages}`, 105, 290, {
+                            align: 'center'
+                        });
+                        doc.setFontSize(fontSize);
+                    }
+                }
+
+                // Generate PDF blob
+                const pdfBlob = doc.output('blob');
+                const fileName = toPdfFile.name.replace(/\.[^/.]+$/, "") + '.pdf';
+                
+                setupDownload('downloadPdfBtn', pdfBlob, fileName);
+                showResult('toPdfResult');
+                btn.innerHTML = '✅ Conversion Complete';
+                
+                // Animate progress to completion
+                animateProgressToComplete('toPdfProgress');
+
+            } catch (error) {
+                console.error('Conversion error:', error);
+                showError('toPdfError', `Failed to convert file: ${error.message}`);
+                btn.innerHTML = '🔄 Convert to PDF';
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => {
+                    if (btn.innerHTML.includes('Complete')) {
+                        btn.innerHTML = '🔄 Convert to PDF';
+                    }
+                }, 3000);
+            }
+        }
+
+        async function convertFromPdf() {
+            if (!fromPdfFile) {
+                showError('fromPdfError', 'Please select a PDF file first');
+                return;
+            }
+
+            const btn = document.getElementById('convertFromPdfBtn');
+            const progressBar = document.getElementById('fromPdfProgress');
+            const outputFormat = document.getElementById('outputFormat').value;
+            
+            // Show loading state
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Extracting...';
+            progressBar.style.display = 'block';
+            hideResults('fromPdf');
+
+            try {
+                // Read PDF file
+                const arrayBuffer = await readFileAsArrayBuffer(fromPdfFile);
+                
+                // Load PDF with PDF.js
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                
+                let fullText = '';
+                const pages = [];
+                const preserveFormatting = document.getElementById('preserveFormatting').checked;
+                const extractMetadata = document.getElementById('extractMetadata').checked;
+                
+                // Extract text from each page
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const textContent = await page.getTextContent();
+                    
+                    let pageText = '';
+                    textContent.items.forEach(item => {
+                        pageText += item.str;
+                        if (preserveFormatting && item.hasEOL) {
+                            pageText += '\n';
+                        } else {
+                            pageText += ' ';
+                        }
+                    });
+                    
+                    pages.push({
+                        page: pageNum,
+                        text: pageText.trim()
+                    });
+                    
+                    fullText += pageText + '\n\n';
+                    
+                    // Update progress
+                    const progress = (pageNum / pdf.numPages) * 100;
+                    updateProgress('fromPdfProgress', progress);
+                }
+
+                // Get PDF metadata
+                let metadata = {};
+                if (extractMetadata) {
+                    try {
+                        const pdfMetadata = await pdf.getMetadata();
+                        metadata = {
+                            title: pdfMetadata.info?.Title || '',
+                            author: pdfMetadata.info?.Author || '',
+                            subject: pdfMetadata.info?.Subject || '',
+                            creator: pdfMetadata.info?.Creator || '',
+                            producer: pdfMetadata.info?.Producer || '',
+                            creationDate: pdfMetadata.info?.CreationDate || '',
+                            modificationDate: pdfMetadata.info?.ModDate || '',
+                            pages: pdf.numPages
+                        };
+                    } catch (e) {
+                        console.warn('Could not extract metadata:', e);
+                    }
+                }
+
+                // Store extracted content
+                extractedPdfContent = {
+                    fullText: fullText.trim(),
+                    pages: pages,
+                    metadata: metadata,
+                    totalPages: pdf.numPages
+                };
+
+                // Display preview
+                displayExtractedContent(pages, metadata);
+
+                // Generate output file
+                const outputBlob = generateOutputFile(extractedPdfContent, outputFormat);
+                const fileName = generateOutputFileName(fromPdfFile.name, outputFormat);
+                
+                setupDownload('downloadConvertedBtn', outputBlob, fileName);
+                showResult('fromPdfResult');
+                btn.innerHTML = '✅ Extraction Complete';
+
+            } catch (error) {
+                console.error('PDF extraction error:', error);
+                showError('fromPdfError', `Failed to extract from PDF: ${error.message}`);
+                btn.innerHTML = '🔄 Extract from PDF';
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => {
+                    if (btn.innerHTML.includes('Complete')) {
+                        btn.innerHTML = '🔄 Extract from PDF';
+                    }
+                }, 3000);
+            }
+        }
+
+        function displayExtractedContent(pages, metadata) {
+            const contentDiv = document.getElementById('extractedContent');
+            contentDiv.innerHTML = '';
+            
+            if (metadata && Object.keys(metadata).length > 0) {
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'pdf-page';
+                metaDiv.innerHTML = `
+                    <strong>📋 Document Metadata:</strong><br>
+                    Pages: ${metadata.pages}<br>
+                    ${metadata.title ? `Title: ${metadata.title}<br>` : ''}
+                    ${metadata.author ? `Author: ${metadata.author}<br>` : ''}
+                `;
+                contentDiv.appendChild(metaDiv);
+            }
+            
+            pages.slice(0, 3).forEach(page => {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'pdf-page';
+                pageDiv.innerHTML = `
+                    <strong>📄 Page ${page.page}:</strong><br>
+                    ${page.text.substring(0, 200)}${page.text.length > 200 ? '...' : ''}
+                `;
+                contentDiv.appendChild(pageDiv);
+            });
+            
+            if (pages.length > 3) {
+                const moreDiv = document.createElement('div');
+                moreDiv.className = 'pdf-page';
+                moreDiv.innerHTML = `<em>... and ${pages.length - 3} more pages</em>`;
+                contentDiv.appendChild(moreDiv);
+            }
+        }
+
+        function generateOutputFile(content, format) {
+            switch (format) {
+                case 'txt':
+                    return new Blob([content.fullText], { type: 'text/plain' });
+                
+                case 'json':
+                    const jsonOutput = {
+                        metadata: content.metadata,
+                        totalPages: content.totalPages,
+                        fullText: content.fullText,
+                        pages: content.pages,
+                        extractedAt: new Date().toISOString()
+                    };
+                    return new Blob([JSON.stringify(jsonOutput, null, 2)], { type: 'application/json' });
+                
+                case 'csv':
+                    let csvContent = 'Page,Text\n';
+                    content.pages.forEach(page => {
+                        const escapedText = '"' + page.text.replace(/"/g, '""') + '"';
+                        csvContent += `${page.page},${escapedText}\n`;
+                    });
+                    return new Blob([csvContent], { type: 'text/csv' });
+                
+                case 'html':
+                    let htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extracted PDF Content</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .metadata { background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .page { margin-bottom: 30px; padding: 15px; border-left: 3px solid #007cba; }
+        .page-header { font-weight: bold; color: #007cba; margin-bottom: 10px; }
+        .page-content { line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <h1>📄 Extracted PDF Content</h1>`;
+                    
+                    if (content.metadata && Object.keys(content.metadata).length > 0) {
+                        htmlContent += `
+    <div class="metadata">
+        <h2>📋 Document Information</h2>
+        <p><strong>Pages:</strong> ${content.metadata.pages}</p>
+        ${content.metadata.title ? `<p><strong>Title:</strong> ${content.metadata.title}</p>` : ''}
+        ${content.metadata.author ? `<p><strong>Author:</strong> ${content.metadata.author}</p>` : ''}
+        ${content.metadata.subject ? `<p><strong>Subject:</strong> ${content.metadata.subject}</p>` : ''}
+    </div>`;
+                    }
+                    
+                    content.pages.forEach(page => {
+                        htmlContent += `
+    <div class="page">
+        <div class="page-header">Page ${page.page}</div>
+        <div class="page-content">${page.text.replace(/\n/g, '<br>')}</div>
+    </div>`;
+                    });
+                    
+                    htmlContent += `
+</body>
+</html>`;
+                    return new Blob([htmlContent], { type: 'text/html' });
+                
+                default:
+                    return new Blob([content.fullText], { type: 'text/plain' });
+            }
+        }
+
+        function generateOutputFileName(originalName, format) {
+            const baseName = originalName.replace(/\.[^/.]+$/, "");
+            const extensions = {
+                'txt': '.txt',
+                'json': '.json',
+                'csv': '.csv',
+                'html': '.html'
+            };
+            return baseName + '_extracted' + extensions[format];
+        }
+
+        // Utility functions
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function setupDownload(buttonId, blob, filename) {
+            const downloadBtn = document.getElementById(buttonId);
+            const url = URL.createObjectURL(blob);
+            
+            downloadBtn.onclick = () => {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+        }
+
+        function animateProgressToComplete(progressId) {
+            const progressFill = document.querySelector(`#${progressId} .progress-fill`);
+            let width = 0;
+            
+            const interval = setInterval(() => {
+                width += Math.random() * 20 + 10;
+                if (width >= 100) {
+                    width = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById(progressId).style.display = 'none';
+                    }, 1000);
+                }
+                progressFill.style.width = width + '%';
+            }, 100);
+        }
+
+        function updateProgress(progressId, percentage) {
+            const progressFill = document.querySelector(`#${progressId} .progress-fill`);
+            progressFill.style.width = percentage + '%';
+        }
+
+        function showResult(resultId) {
+            document.getElementById(resultId).style.display = 'block';
+        }
+
+        function hideResults(type) {
+            document.getElementById(type + 'Result').style.display = 'none';
+            document.getElementById(type + 'Error').style.display = 'none';
+        }
+
+        function showError(errorId, message) {
+            const errorSection = document.getElementById(errorId);
+            const errorMsg = document.getElementById(errorId.replace('Error', 'ErrorMsg'));
+            errorMsg.textContent = message;
+            errorSection.style.display = 'block';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatCsvForPdf(csvContent) {
+            const lines = csvContent.split('\n');
+            let formatted = '';
+            
+            lines.forEach((line, index) => {
+                if (line.trim()) {
+                    const cells = line.split(',');
+                    if (index === 0) {
+                        formatted += 'TABLE HEADER:\n';
+                        formatted += cells.join(' | ') + '\n';
+                        formatted += '-'.repeat(50) + '\n';
+                    } else {
+                        formatted += cells.join(' | ') + '\n';
+                    }
+                }
+            });
+            
+            return formatted;
+        }
+
+        function stripHtmlTags(html) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            return tempDiv.textContent || tempDiv.innerText || '';
+        }
+
+        // Error handling for PDF.js
+        window.addEventListener('error', function(e) {
+            if (e.error && e.error.name === 'UnknownErrorException') {
+                console.warn('PDF.js encountered an unknown error, but conversion may still work');
+            }
+        });
+
+        // Service worker registration for offline support (optional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // Uncomment the next line if you want to add a service worker
+                // navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
+</body>
+</html>
+                
